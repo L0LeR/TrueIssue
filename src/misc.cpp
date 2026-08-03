@@ -2,7 +2,6 @@
 #include "offsets.h"
 #include "memory.h"
 
-// offsets for misc section lol
 extern bool bGodMode, bInfAmmo, bRapidFire, bNoRecoil, bSpeedHack;
 extern float speedHackValue;
 extern uintptr_t g_player_manager;
