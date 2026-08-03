@@ -6,12 +6,18 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        submodules: recursive
+
+    - name: Clone ImGui
+      run: git clone --depth 1 https://github.com/ocornut/imgui external/imgui
+
+    - name: Clone MinHook
+      run: git clone --depth 1 https://github.com/TsudaKageyu/minhook external/minhook
+
     - name: Build
       run: |
         cmake -B build -A x64
         cmake --build build --config Release
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
