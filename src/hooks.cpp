@@ -23,9 +23,9 @@ LRESULT __stdcall WndProcHook(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 }
 
 IDXGISwapChain* FindSwapChain() {
-    WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, DefWindowProc, 0, 0, GetModuleHandle(0), 0, 0, 0, 0, L"DX", 0 };
-    RegisterClassEx(&wc);
-    HWND hWnd = CreateWindow(wc.lpszClassName, L"", WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, 0, 0, wc.hInstance, 0);
+    WNDCLASSEXW wc = { sizeof(WNDCLASSEXW), CS_CLASSDC, DefWindowProc, 0, 0, GetModuleHandle(0), 0, 0, 0, 0, L"DX", 0 };
+    RegisterClassExW(&wc);
+    HWND hWnd = CreateWindowExW(0, wc.lpszClassName, L"", WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, 0, 0, wc.hInstance, 0);
     D3D_FEATURE_LEVEL levels[] = { D3D_FEATURE_LEVEL_11_0 };
     DXGI_SWAP_CHAIN_DESC sd = { 0 };
     sd.BufferCount = 1;
@@ -39,7 +39,7 @@ IDXGISwapChain* FindSwapChain() {
     D3D11CreateDeviceAndSwapChain(0, D3D_DRIVER_TYPE_HARDWARE, 0, 0, levels, 1, D3D11_SDK_VERSION, &sd, &pSwapChain, &pTempDevice, 0, 0);
     pTempDevice->Release();
     DestroyWindow(hWnd);
-    UnregisterClass(wc.lpszClassName, wc.hInstance);
+    UnregisterClassW(wc.lpszClassName, wc.hInstance);
     return pSwapChain;
 }
 
