@@ -7,7 +7,6 @@
 #include <MinHook.h>
 
 HWND window = nullptr;
-WNDPROC oWndProc = nullptr;
 ID3D11Device* pDevice = nullptr;
 ID3D11DeviceContext* pContext = nullptr;
 ID3D11RenderTargetView* pRenderTargetView = nullptr;
@@ -15,12 +14,6 @@ bool g_showMenu = true;
 
 typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain*, UINT, UINT);
 Present_t oPresent = nullptr;
-
-LRESULT __stdcall WndProcHook(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (g_showMenu && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-        return true;
-    return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
-}
 
 IDXGISwapChain* FindSwapChain() {
     WNDCLASSEXW wc = { sizeof(WNDCLASSEXW), CS_CLASSDC, DefWindowProc, 0, 0, GetModuleHandle(0), 0, 0, 0, 0, L"DX", 0 };
@@ -54,7 +47,6 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
         ImGui_ImplWin32_Init(window);
         ImGui_ImplDX11_Init(pDevice, pContext);
         ImGui::StyleColorsDark();
-        oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProcHook);
     }
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
