@@ -5,6 +5,7 @@
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include <MinHook.h>
+#include <cstdint>
 
 HWND window = nullptr;
 WNDPROC oWndProc = nullptr;
@@ -16,9 +17,57 @@ bool g_showMenu = true;
 typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain*, UINT, UINT);
 Present_t oPresent = nullptr;
 
+// Ручная передача событий в ImGui без вызова ImGui_ImplWin32_WndProcHandler
+void ProcessInputEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    ImGuiIO& io = ImGui::GetIO();
+    switch (uMsg) {
+        case WM_MOUSEMOVE:
+            io.AddMousePosEvent((float)LOWORD(lParam), (float)HIWORD(lParam));
+            break;
+        case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
+            io.AddMouseButtonEvent(0, true);
+            break;
+        case WM_LBUTTONUP:
+            io.AddMouseButtonEvent(0, false);
+            break;
+        case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
+            io.AddMouseButtonEvent(1, true);
+            break;
+        case WM_RBUTTONUP:
+            io.AddMouseButtonEvent(1, false);
+            break;
+        case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
+            io.AddMouseButtonEvent(2, true);
+            break;
+        case WM_MBUTTONUP:
+            io.AddMouseButtonEvent(2, false);
+            break;
+        case WM_MOUSEWHEEL:
+            io.AddMouseWheelEvent(0.0f, (float)GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA);
+            break;
+        case WM_KEYDOWN: case WM_SYSKEYDOWN:
+            if (wParam < 256)
+                io.AddKeyEvent(ImGuiKey_KeysToKey[wParam], true);
+            break;
+        case WM_KEYUP: case WM_SYSKEYUP:
+            if (wParam < 256)
+                io.AddKeyEvent(ImGuiKey_KeysToKey[wParam], false);
+            break;
+        case WM_CHAR:
+            if (wParam > 0 && wParam < 0x10000)
+                io.AddInputCharacter((unsigned short)wParam);
+            break;
+        default: break;
+    }
+}
+
 LRESULT __stdcall WndProcHook(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (g_showMenu && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-        return true;
+    if (g_showMenu) {
+        ProcessInputEvents(hWnd, uMsg, wParam, lParam);
+        // Не позволяем ImGui перехватывать управление, если меню открыто
+        if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN || uMsg == WM_MBUTTONDOWN)
+            return true;
+    }
     return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
 }
 
