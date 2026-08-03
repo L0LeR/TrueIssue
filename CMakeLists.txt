@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 # MinHook
 add_subdirectory(external/minhook)
 
-# ImGui (собираем напрямую, так как нет CMakeLists.txt)
+# piska fix
 set(IMGUI_SOURCES
     external/imgui/imgui.cpp
     external/imgui/imgui_demo.cpp
@@ -20,7 +20,6 @@ set(IMGUI_SOURCES
 add_library(imgui STATIC ${IMGUI_SOURCES})
 target_include_directories(imgui PUBLIC external/imgui external/imgui/backends)
 
-# Наш DLL
 file(GLOB SOURCES src/*.cpp src/*.h)
 
 add_library(TrueIssue SHARED ${SOURCES})
