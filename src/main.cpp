@@ -3,6 +3,9 @@
 #include "hooks.h"
 #include "memory.h"
 #include "offsets.h"
+#include "aimbot.h"
+#include "esp.h"
+#include "misc.h"
 
 uintptr_t g_game_assembly_base = 0;
 uintptr_t g_player_manager = 0;
@@ -31,7 +34,7 @@ bool InitIL2CPP() {
     if (!p_domain_get || !p_class_from_name || !p_get_field || !p_static_get)
         return false;
 
-    Il2CppClass* pmClass = p_class_from_name(nullptr, "Chillow.StandChillow.Player", "PlayerManager");
+    Il2CppClass* pmClass = (Il2CppClass*)p_class_from_name(nullptr, "Chillow.StandChillow.Player", "PlayerManager");
     if (pmClass) {
         FieldInfo* instanceField = p_get_field(pmClass, "_instance");
         if (instanceField) {
@@ -42,7 +45,7 @@ bool InitIL2CPP() {
         }
     }
 
-    Il2CppClass* camClass = p_class_from_name(nullptr, "Chillow.StandChillow.Player", "PlayerMainCamera");
+    Il2CppClass* camClass = (Il2CppClass*)p_class_from_name(nullptr, "Chillow.StandChillow.Player", "PlayerMainCamera");
     if (camClass) {
         FieldInfo* camInstanceField = p_get_field(camClass, "_instance");
         if (camInstanceField) {
