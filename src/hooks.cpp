@@ -17,7 +17,7 @@ typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain*, UINT, UINT);
 Present_t oPresent = nullptr;
 
 LRESULT __stdcall WndProcHook(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    if (g_showMenu && ImGui_ImplWin32_ProcessEvent(hWnd, uMsg, wParam, lParam))
+    if (g_showMenu && ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
         return true;
     return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
 }
