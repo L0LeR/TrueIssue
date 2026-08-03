@@ -8,7 +8,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Clone ImGui
-      run: git clone --depth 1 https://github.com/ocornut/imgui external/imgui
+      run: git clone --depth 1 --branch v1.91.0 https://github.com/ocornut/imgui external/imgui
 
     - name: Clone MinHook
       run: git clone --depth 1 https://github.com/TsudaKageyu/minhook external/minhook
