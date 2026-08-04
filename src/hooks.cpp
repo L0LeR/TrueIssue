@@ -9,7 +9,6 @@
 HWND window = nullptr;
 ID3D11Device* pDevice = nullptr;
 ID3D11DeviceContext* pContext = nullptr;
-ID3D11RenderTargetView* pRenderTargetView = nullptr;
 bool g_showMenu = true;
 
 typedef HRESULT(__stdcall* Present_t)(IDXGISwapChain*, UINT, UINT);
@@ -48,13 +47,18 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
         ImGui_ImplDX11_Init(pDevice, pContext);
         ImGui::StyleColorsDark();
     }
+
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
     DrawMenu();
     ImGui::Render();
-    pContext->OMSetRenderTargets(1, &pRenderTargetView, NULL);
+
+    ID3D11RenderTargetView* rtv = nullptr;
+    pContext->OMGetRenderTargets(1, &rtv, nullptr);
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    if (rtv) rtv->Release();
+
     return oPresent(pSwapChain, SyncInterval, Flags);
 }
 
